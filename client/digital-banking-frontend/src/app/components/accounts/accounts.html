@@ -55,10 +55,10 @@
                     <div *ngIf="accounts.length > 0; else noAccounts">
                         <div *ngFor="let account of accounts; trackBy: trackByAccountId" class="account-item">
                             <div class="account-info">
-                                <strong>{{account.id}}</strong>
-                                <span class="account-balance">Balance: {{account.balance | number:'1.2-2'}}
-                                    {{account.currency}}</span>
-                                <span class="account-customer">Owner: {{account.customerDTO?.name}}</span>
+                                <strong>{{account.id}}</strong> <span class="account-balance">Balance: {{account.balance
+                                    | number:'1.2-2'}}
+                                    {{account.currency || 'USD'}}</span>
+                                <span class="account-customer">Owner: {{account.customer?.name}}</span>
                                 <span class="account-status">Status: {{account.status}}</span>
                             </div>
                             <button class="delete-btn" (click)="deleteAccount(account.id!)">Delete</button>

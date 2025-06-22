@@ -1,14 +1,17 @@
 export interface BankAccount {
     id?: string;
     balance: number;
-    currency: string;
+    currency?: string;
     status: string;
     createdAt?: string;
-    customerDTO?: {
+    type?: string;
+    customer?: {
         id: number;
         name: string;
         email: string;
+        bankAccounts?: any;
     };
+    accountOperations?: any;
 }
 
 export interface CurrentAccount extends BankAccount {

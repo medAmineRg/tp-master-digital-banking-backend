@@ -19,12 +19,15 @@ export class Accounts implements OnInit {
     balance: 0,
     customerDTO: 0
   };
-  accountType: string = ''; constructor(
+  accountType: string = '';
+
+  constructor(
     private readonly accountService: AccountService,
     private readonly customerService: CustomerService,
     private readonly cdr: ChangeDetectorRef,
     private readonly ngZone: NgZone
   ) { }
+
   ngOnInit() {
     this.loadAccounts();
     this.loadCustomers();
@@ -39,19 +42,21 @@ export class Accounts implements OnInit {
       next: (data) => {
         console.log('Accounts received:', data);
         this.accounts = data;
-        this.cdr.markForCheck(); // Mark for check instead of detectChanges
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading accounts:', error);
       }
     });
-  } loadCustomers() {
+  }
+
+  loadCustomers() {
     console.log('Loading customers...');
     this.customerService.getAllCustomers().subscribe({
       next: (data) => {
         console.log('Customers received:', data);
         this.customers = data;
-        this.cdr.markForCheck(); // Mark for check instead of detectChanges
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading customers:', error);
