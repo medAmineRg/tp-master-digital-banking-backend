@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BankAccount, CreateAccountRequest } from '../../models/account.model';
@@ -19,34 +19,39 @@ export class Accounts implements OnInit {
     balance: 0,
     customerDTO: 0
   };
-  accountType: string = '';
-  constructor(
+  accountType: string = ''; constructor(
     private readonly accountService: AccountService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly ngZone: NgZone
   ) { }
-
   ngOnInit() {
     this.loadAccounts();
     this.loadCustomers();
-  }
-  loadAccounts() {
+
+    // Additional safeguard: Force change detection after a short delay
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 100);
+  } loadAccounts() {
     console.log('Loading accounts...');
     this.accountService.getAllAccounts().subscribe({
       next: (data) => {
         console.log('Accounts received:', data);
         this.accounts = data;
+        this.cdr.markForCheck(); // Mark for check instead of detectChanges
       },
       error: (error) => {
         console.error('Error loading accounts:', error);
       }
     });
-  }
-  loadCustomers() {
+  } loadCustomers() {
     console.log('Loading customers...');
     this.customerService.getAllCustomers().subscribe({
       next: (data) => {
         console.log('Customers received:', data);
         this.customers = data;
+        this.cdr.markForCheck(); // Mark for check instead of detectChanges
       },
       error: (error) => {
         console.error('Error loading customers:', error);
@@ -61,6 +66,7 @@ export class Accounts implements OnInit {
           next: (account) => {
             this.accounts.push(account);
             this.resetForm();
+            this.cdr.detectChanges(); // Manually trigger change detection
           },
           error: (error) => {
             console.error('Error creating current account:', error);
@@ -71,6 +77,7 @@ export class Accounts implements OnInit {
           next: (account) => {
             this.accounts.push(account);
             this.resetForm();
+            this.cdr.detectChanges(); // Manually trigger change detection
           },
           error: (error) => {
             console.error('Error creating saving account:', error);
@@ -79,11 +86,11 @@ export class Accounts implements OnInit {
       }
     }
   }
-
   deleteAccount(id: string) {
     this.accountService.deleteAccount(id).subscribe({
       next: () => {
         this.accounts = this.accounts.filter(a => a.id !== id);
+        this.cdr.detectChanges(); // Manually trigger change detection
       },
       error: (error) => {
         console.error('Error deleting account:', error);
