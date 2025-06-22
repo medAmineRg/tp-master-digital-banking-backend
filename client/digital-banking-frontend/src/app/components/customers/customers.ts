@@ -14,16 +14,18 @@ export class Customers implements OnInit {
   customers: Customer[] = [];
   newCustomer: Customer = { name: '', email: '' };
 
-  constructor(private customerService: CustomerService) { }
+  constructor(private readonly customerService: CustomerService) { }
 
   ngOnInit() {
     this.loadCustomers();
   }
-
   loadCustomers() {
+    console.log('Loading customers...');
     this.customerService.getAllCustomers().subscribe({
       next: (data) => {
+        console.log('Customers received:', data);
         this.customers = data;
+        console.log('Customers array length:', this.customers.length);
       },
       error: (error) => {
         console.error('Error loading customers:', error);
@@ -44,7 +46,6 @@ export class Customers implements OnInit {
       });
     }
   }
-
   deleteCustomer(id: number) {
     this.customerService.deleteCustomer(id).subscribe({
       next: () => {
@@ -54,5 +55,28 @@ export class Customers implements OnInit {
         console.error('Error deleting customer:', error);
       }
     });
+  }
+
+  getAccountTypeDisplay(type: string): string {
+    switch (type) {
+      case 'CA':
+        return 'Current Account';
+      case 'SA':
+        return 'Savings Account';
+      default:
+        return type;
+    }
+  }
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  }
+
+  trackByCustomerId(index: number, customer: Customer): number {
+    return customer.id || index;
+  }
+
+  trackByAccountId(index: number, account: any): string {
+    return account.id || index;
   }
 }
