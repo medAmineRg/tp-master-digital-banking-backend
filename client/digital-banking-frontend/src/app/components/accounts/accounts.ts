@@ -20,20 +20,20 @@ export class Accounts implements OnInit {
     customerDTO: 0
   };
   accountType: string = '';
-
   constructor(
-    private accountService: AccountService,
-    private customerService: CustomerService
+    private readonly accountService: AccountService,
+    private readonly customerService: CustomerService
   ) { }
 
   ngOnInit() {
     this.loadAccounts();
     this.loadCustomers();
   }
-
   loadAccounts() {
+    console.log('Loading accounts...');
     this.accountService.getAllAccounts().subscribe({
       next: (data) => {
+        console.log('Accounts received:', data);
         this.accounts = data;
       },
       error: (error) => {
@@ -41,10 +41,11 @@ export class Accounts implements OnInit {
       }
     });
   }
-
   loadCustomers() {
+    console.log('Loading customers...');
     this.customerService.getAllCustomers().subscribe({
       next: (data) => {
+        console.log('Customers received:', data);
         this.customers = data;
       },
       error: (error) => {
@@ -89,12 +90,14 @@ export class Accounts implements OnInit {
       }
     });
   }
-
   private resetForm() {
     this.newAccount = {
       balance: 0,
       customerDTO: 0
     };
     this.accountType = '';
+  }
+  trackByAccountId(index: number, account: BankAccount): string {
+    return account.id ?? index.toString();
   }
 }
