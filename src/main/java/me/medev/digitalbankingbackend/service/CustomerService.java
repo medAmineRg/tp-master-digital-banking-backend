@@ -2,8 +2,11 @@ package me.medev.digitalbankingbackend.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.medev.digitalbankingbackend.dto.BankAccountDTO;
 import me.medev.digitalbankingbackend.dto.CustomerDTO;
+import me.medev.digitalbankingbackend.entity.CurrentAccount;
 import me.medev.digitalbankingbackend.entity.Customer;
+import me.medev.digitalbankingbackend.entity.SavingAccount;
 import me.medev.digitalbankingbackend.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,15 +72,34 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public boolean existsById(Long id) {
         return customerRepository.existsById(id);
-    }
+    } // Simple conversion methods
 
-    // Simple conversion methods
     private CustomerDTO toDTO(Customer customer) {
         CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
         dto.setName(customer.getName());
         dto.setEmail(customer.getEmail());
-        // Don't include bankAccounts to avoid circular references
+
+        // Include simplified bank accounts to avoid circular references
+        if (customer.getBankAccounts() != null && !customer.getBankAccounts().isEmpty()) {
+            dto.setBankAccounts(
+                    customer.getBankAccounts().stream()
+                            .map(account -> {
+                                BankAccountDTO bankAccountDTO = new BankAccountDTO();
+                                bankAccountDTO.setId(account.getId());
+                                bankAccountDTO.setBalance(account.getBalance());
+                                bankAccountDTO.setCreatedAt(account.getCreatedAt());
+                                bankAccountDTO.setStatus(account.getStatus());
+                                if (account instanceof SavingAccount) {
+                                    bankAccountDTO.setType("SA");
+                                } else if (account instanceof CurrentAccount) {
+                                    bankAccountDTO.setType("CA");
+                                }
+                                return bankAccountDTO;
+                            })
+                            .toList());
+        }
+
         return dto;
     }
 

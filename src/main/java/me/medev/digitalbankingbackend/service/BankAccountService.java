@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.medev.digitalbankingbackend.dto.BankAccountDTO;
 import me.medev.digitalbankingbackend.dto.CurrentAccountDTO;
+import me.medev.digitalbankingbackend.dto.CustomerDTO;
 import me.medev.digitalbankingbackend.dto.SavingAccountDTO;
 import me.medev.digitalbankingbackend.entity.BankAccount;
 import me.medev.digitalbankingbackend.entity.CurrentAccount;
@@ -135,7 +136,16 @@ public class BankAccountService {
         dto.setCreatedAt(bankAccount.getCreatedAt());
         dto.setStatus(bankAccount.getStatus());
         dto.setType(getAccountType(bankAccount));
-        // Don't include customer and accountOperations to avoid circular references
+
+        // Add customer information
+        if (bankAccount.getCustomer() != null) {
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setId(bankAccount.getCustomer().getId());
+            customerDTO.setName(bankAccount.getCustomer().getName());
+            customerDTO.setEmail(bankAccount.getCustomer().getEmail());
+            dto.setCustomer(customerDTO);
+        }
+
         return dto;
     }
 
@@ -147,6 +157,16 @@ public class BankAccountService {
         dto.setStatus(savingAccount.getStatus());
         dto.setType("SA");
         dto.setInterestRate(savingAccount.getInterestRate());
+
+        // Add customer information
+        if (savingAccount.getCustomer() != null) {
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setId(savingAccount.getCustomer().getId());
+            customerDTO.setName(savingAccount.getCustomer().getName());
+            customerDTO.setEmail(savingAccount.getCustomer().getEmail());
+            dto.setCustomer(customerDTO);
+        }
+
         return dto;
     }
 
@@ -158,6 +178,16 @@ public class BankAccountService {
         dto.setStatus(currentAccount.getStatus());
         dto.setType("CA");
         dto.setOverDraft(currentAccount.getOverDraft());
+
+        // Add customer information
+        if (currentAccount.getCustomer() != null) {
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setId(currentAccount.getCustomer().getId());
+            customerDTO.setName(currentAccount.getCustomer().getName());
+            customerDTO.setEmail(currentAccount.getCustomer().getEmail());
+            dto.setCustomer(customerDTO);
+        }
+
         return dto;
     }
 
