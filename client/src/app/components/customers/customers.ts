@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Customer } from '../../models/customer.model';
 import { CustomerService } from '../../services/customer.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-customers',
@@ -13,19 +14,33 @@ import { CustomerService } from '../../services/customer.service';
 export class Customers implements OnInit {
   customers: Customer[] = [];
   newCustomer: Customer = { name: '', email: '' };
+  searchQuery: string = '';
+
   constructor(
     private readonly customerService: CustomerService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly ngZone: NgZone
+    private readonly ngZone: NgZone,
+    private readonly route: ActivatedRoute
   ) { }
+
   ngOnInit() {
-    this.loadCustomers();
+    // Check for search parameter in the URL
+    this.route.queryParams.subscribe(params => {
+      if (params['search']) {
+        this.searchQuery = params['search'];
+        this.searchCustomers();
+      } else {
+        this.loadCustomers();
+      }
+    });
 
     // Additional safeguard: Force change detection after a short delay
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 100);
-  } loadCustomers() {
+  }
+
+  loadCustomers() {
     console.log('Loading customers...');
     this.customerService.getAllCustomers().subscribe({
       next: (data) => {
@@ -39,6 +54,25 @@ export class Customers implements OnInit {
       }
     });
   }
+
+  searchCustomers() {
+    if (this.searchQuery.trim()) {
+      console.log('Searching customers by name:', this.searchQuery);
+      this.customerService.searchCustomersByName(this.searchQuery).subscribe({
+        next: (data) => {
+          console.log('Search results:', data);
+          this.customers = data;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error searching customers:', error);
+        }
+      });
+    } else {
+      this.loadCustomers();
+    }
+  }
+
   onSubmit() {
     if (this.newCustomer.name && this.newCustomer.email) {
       this.customerService.createCustomer(this.newCustomer).subscribe({
@@ -64,6 +98,11 @@ export class Customers implements OnInit {
     });
   }
 
+  clearSearch() {
+    this.searchQuery = '';
+    this.loadCustomers();
+  }
+
   getAccountTypeDisplay(type: string): string {
     switch (type) {
       case 'CA':
@@ -78,12 +117,11 @@ export class Customers implements OnInit {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   }
-
   trackByCustomerId(index: number, customer: Customer): number {
-    return customer.id || index;
+    return customer.id ?? index;
   }
 
   trackByAccountId(index: number, account: any): string {
-    return account.id || index;
+    return account.id ?? index;
   }
 }

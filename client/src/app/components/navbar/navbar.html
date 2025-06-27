@@ -9,7 +9,8 @@
         <span class="nav-link disabled">Disabled</span>
     </div>
     <div class="navbar-search">
-        <input type="text" class="search-input" placeholder="Search">
-        <button class="search-btn">Search</button>
+        <input type="text" class="search-input" placeholder="Search customers by name" [(ngModel)]="searchQuery"
+            (keyup.enter)="searchCustomers()">
+        <button class="search-btn" (click)="searchCustomers()">Search</button>
     </div>
 </nav>

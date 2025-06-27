@@ -24,6 +24,15 @@
         <div class="customers-list-section">
             <div class="card">
                 <h3>Customers</h3>
+                <div class="search-container">
+                    <input type="text" [(ngModel)]="searchQuery" placeholder="Search customers by name"
+                        class="search-input" (keyup.enter)="searchCustomers()">
+                    <button (click)="searchCustomers()" class="search-btn">Search</button>
+                    <button *ngIf="searchQuery" (click)="clearSearch()" class="clear-btn">Clear</button>
+                </div>
+                <div *ngIf="searchQuery" class="search-results-info">
+                    Showing results for: <strong>{{searchQuery}}</strong> ({{customers.length}} found)
+                </div>
                 <div class="customers-list">
                     <div *ngIf="customers.length > 0; else noCustomers">
                         <div *ngFor="let customer of customers; trackBy: trackByCustomerId" class="customer-item">
