@@ -24,8 +24,6 @@
         <div class="customers-list-section">
             <div class="card">
                 <h3>Customers</h3>
-                <!-- Debug info -->
-                <p>Debug: customers.length = {{customers.length}}</p>
                 <div class="customers-list">
                     <div *ngIf="customers.length > 0; else noCustomers">
                         <div *ngFor="let customer of customers; trackBy: trackByCustomerId" class="customer-item">

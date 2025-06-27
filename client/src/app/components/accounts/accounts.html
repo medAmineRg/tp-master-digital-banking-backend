@@ -3,8 +3,6 @@
         <div class="account-form-section">
             <div class="card">
                 <h3>New Account</h3>
-                <!-- Debug info -->
-                <p>Debug: customers.length = {{customers.length}}</p>
                 <form (ngSubmit)="onSubmit()" #accountForm="ngForm">
                     <div class="form-group">
                         <label for="customer">Customer:</label> <select id="customer" name="customer"
@@ -49,8 +47,6 @@
         <div class="accounts-list-section">
             <div class="card">
                 <h3>Bank Accounts</h3>
-                <!-- Debug info -->
-                <p>Debug: accounts.length = {{accounts.length}}</p>
                 <div class="accounts-list">
                     <div *ngIf="accounts.length > 0; else noAccounts">
                         <div *ngFor="let account of accounts; trackBy: trackByAccountId" class="account-item">
